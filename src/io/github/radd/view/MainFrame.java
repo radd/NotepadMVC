@@ -7,10 +7,15 @@ package io.github.radd.view;
 
 import io.github.radd.controller.NoteController;
 import io.github.radd.model.NoteModel;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Utilities;
 
 /**
  *
@@ -66,6 +71,11 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
 
         docTextPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 4, 3));
         docTextPane.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        docTextPane.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                docTextPaneKeyPressed(evt);
+            }
+        });
         docScrollPane.setViewportView(docTextPane);
 
         fileMenu.setText("File");
@@ -105,6 +115,55 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         openFile();
     }//GEN-LAST:event_openMenuItemActionPerformed
 
+    private void docTextPaneKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_docTextPaneKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            System.out.println("enter is pressed");
+            if(insertTabs())
+                evt.consume();
+        }
+    }//GEN-LAST:event_docTextPaneKeyPressed
+
+    //TODO new class
+    //TODO add also spaces
+    private boolean insertTabs() {
+        String text = docTextPane.getText();
+        String[] lines = text.split(System.lineSeparator());
+          
+        int caretPos = docTextPane.getCaretPosition();
+        int currRow = (caretPos == 0) ? 1 : 0;
+        
+        try {
+            for (int offset = caretPos; offset > 0;) {
+                offset = Utilities.getRowStart(docTextPane, offset) - 1;
+                currRow++;
+            }
+        } catch (BadLocationException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        String currLine = lines[currRow - 1];
+        StringBuilder sb = new StringBuilder();
+        for (char c : currLine.toCharArray()) {
+            if("\t".equals(""+c))
+                sb.append("\t");
+            else 
+                break;
+        } 
+        
+        if(sb.length() > 0) {
+            try {
+                docTextPane.getStyledDocument().insertString(
+                        caretPos, System.lineSeparator() + sb, null);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return true;
+        }
+        else
+            return false;
+    }
+    
     private void openFile() {
         String path = model.getOpenFilePath();
         JFileChooser chooser = new JFileChooser(path);
@@ -148,6 +207,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         //Scroll to top
         docTextPane.setCaretPosition(0);  
     }
+
     
     
     

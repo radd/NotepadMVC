@@ -28,5 +28,5 @@ public interface NoteModel {
 
     public String getErrorMsg();
     
-    
+
 }
