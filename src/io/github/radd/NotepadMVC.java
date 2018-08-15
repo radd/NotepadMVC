@@ -5,6 +5,8 @@
  */
 package io.github.radd;
 
+import io.github.radd.controller.NoteControllerImpl;
+import io.github.radd.model.NoteModelImpl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -38,7 +40,8 @@ public class NotepadMVC {
         } 
         //</editor-fold>
         
-        
+        NoteModelImpl model = new NoteModelImpl();
+        NoteControllerImpl controller = new NoteControllerImpl(model);
     }
     
 }

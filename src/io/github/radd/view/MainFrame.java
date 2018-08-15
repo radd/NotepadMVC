@@ -5,6 +5,8 @@
  */
 package io.github.radd.view;
 
+import io.github.radd.controller.NoteController;
+import io.github.radd.model.NoteModel;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -14,11 +16,30 @@ import java.util.Observer;
  */
 public class MainFrame extends javax.swing.JFrame implements Observer {
 
+    private NoteController controller;
+    private NoteModel model;
+    
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+    }
+    
+    
+    public MainFrame(NoteController c, NoteModel m) {
+        controller = c;
+        model = m;
+        
+        //Add observer (this view) to model
+        ((Observable) model).addObserver(this);
+        
+        initComponents();
+        setTitle("Notepad");
+    }
+    
+    public void showView() {
+        setVisible(true);
     }
 
     /**
@@ -30,22 +51,49 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jScrollPane2.setBorder(null);
+
+        jTextPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 4, 3));
+        jTextPane1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        jScrollPane2.setViewportView(jTextPane1);
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
     
     @Override
