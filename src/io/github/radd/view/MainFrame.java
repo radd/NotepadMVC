@@ -9,6 +9,8 @@ import io.github.radd.controller.NoteController;
 import io.github.radd.model.NoteModel;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -51,53 +53,103 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
+        docScrollPane = new javax.swing.JScrollPane();
+        docTextPane = new javax.swing.JTextPane();
+        menuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        openMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jScrollPane2.setBorder(null);
+        docScrollPane.setBorder(null);
 
-        jTextPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 4, 3));
-        jTextPane1.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        jScrollPane2.setViewportView(jTextPane1);
+        docTextPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 4, 3));
+        docTextPane.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        docScrollPane.setViewportView(docTextPane);
 
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
+        fileMenu.setText("File");
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        openMenuItem.setText("Open");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(openMenuItem);
 
-        setJMenuBar(jMenuBar1);
+        menuBar.add(fileMenu);
+
+        editMenu.setText("Edit");
+        menuBar.add(editMenu);
+
+        setJMenuBar(menuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+            .addComponent(docScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                .addComponent(docScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
                 .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        openFile();
+    }//GEN-LAST:event_openMenuItemActionPerformed
+
+    private void openFile() {
+        String path = model.getOpenFilePath();
+        JFileChooser chooser = new JFileChooser(path);
+	chooser.setFileFilter(model.getFileFilter());
+        chooser.setAcceptAllFileFilterUsed(false);
+        int returnVal = chooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) { 
+            controller.setFile(chooser.getSelectedFile());
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JScrollPane docScrollPane;
+    private javax.swing.JTextPane docTextPane;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem openMenuItem;
     // End of variables declaration//GEN-END:variables
     
     @Override
     public void update(Observable o, Object arg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        NoteModel.Action action = (NoteModel.Action) arg;
+        System.out.println("update: " + action);
+        
+        switch(action) {
+            case OPEN_FILE: showFile(); break;
+            case OPEN_ERROR: showErrorMessage(model.getErrorMsg()); break;
+        }
     }
+    
+    private void showErrorMessage(String msg) {
+        JOptionPane.showMessageDialog(this,
+                msg,
+                "Error",
+                JOptionPane.ERROR_MESSAGE); 
+    }
+
+    private void showFile() {
+        docTextPane.setText(model.getFileContent());
+        
+        //Scroll to top
+        docTextPane.setCaretPosition(0);  
+    }
+    
+    
+    
+    
 }

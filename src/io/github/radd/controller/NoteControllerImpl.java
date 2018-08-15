@@ -7,6 +7,7 @@ package io.github.radd.controller;
 
 import io.github.radd.model.NoteModel;
 import io.github.radd.view.MainFrame;
+import java.io.File;
 
 /**
  *
@@ -23,6 +24,11 @@ public class NoteControllerImpl implements NoteController {
         //Create view and show it
         view = new MainFrame(this, model);
         view.showView();
+    }
+
+    @Override
+    public void setFile(File file) {
+        model.openFile(file);
     }
     
 }

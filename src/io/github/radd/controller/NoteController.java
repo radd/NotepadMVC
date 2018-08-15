@@ -5,10 +5,14 @@
  */
 package io.github.radd.controller;
 
+import java.io.File;
+
 /**
  *
  * @author Piotr
  */
 public interface NoteController {
+
+    public void setFile(File selectedFile);
     
 }
