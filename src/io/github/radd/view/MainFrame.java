@@ -7,6 +7,7 @@ package io.github.radd.view;
 
 import io.github.radd.controller.NoteController;
 import io.github.radd.model.NoteModel;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -42,7 +43,12 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         ((Observable) model).addObserver(this);
         
         initComponents();
+        initAfter();
+    }
+    
+    private void initAfter() {
         setTitle("Notepad");
+        defaultTheme();
     }
     
     public void showView() {
@@ -64,6 +70,8 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        viewMenu = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,6 +79,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
 
         docTextPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 4, 3));
         docTextPane.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        docTextPane.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         docTextPane.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 docTextPaneKeyPressed(evt);
@@ -92,6 +101,18 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
 
         editMenu.setText("Edit");
         menuBar.add(editMenu);
+
+        viewMenu.setText("View");
+
+        jCheckBoxMenuItem1.setText("Dark theme");
+        jCheckBoxMenuItem1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCheckBoxMenuItem1ItemStateChanged(evt);
+            }
+        });
+        viewMenu.add(jCheckBoxMenuItem1);
+
+        menuBar.add(viewMenu);
 
         setJMenuBar(menuBar);
 
@@ -123,12 +144,34 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         }
     }//GEN-LAST:event_docTextPaneKeyPressed
 
+    private void jCheckBoxMenuItem1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ItemStateChanged
+        if(evt.getStateChange() == ItemEvent.SELECTED)
+           darkTheme();
+        else
+           defaultTheme();
+    }//GEN-LAST:event_jCheckBoxMenuItem1ItemStateChanged
+    
+    private  void darkTheme() {
+        docTextPane.setBackground(new java.awt.Color(68, 68, 68));
+        docTextPane.setForeground(new java.awt.Color(255, 255, 255));
+        docTextPane.setCaretColor(new java.awt.Color(255, 255, 255));
+        docTextPane.updateUI(); 
+    }
+    
+    private  void defaultTheme() {
+        docTextPane.setBackground(new java.awt.Color(255, 255, 255));
+        docTextPane.setForeground(new java.awt.Color(0, 0, 0));
+        docTextPane.setCaretColor(new java.awt.Color(0, 0, 0));
+        docTextPane.updateUI();
+    }
     //TODO new class
     //TODO add also spaces
     private boolean insertTabs() {
-        String text = docTextPane.getText();
+        String text = docTextPane.getText() + " "; //Add space because last chars are \r\n  and split() do not split it to new line
         String[] lines = text.split(System.lineSeparator());
-          
+        if(lines.length == 0)
+            return false;
+        
         int caretPos = docTextPane.getCaretPosition();
         int currRow = (caretPos == 0) ? 1 : 0;
         
@@ -179,8 +222,10 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
     private javax.swing.JTextPane docTextPane;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     
     @Override
