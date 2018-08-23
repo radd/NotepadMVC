@@ -69,6 +69,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         viewMenu = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
@@ -84,6 +85,9 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 docTextPaneKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                docTextPaneKeyReleased(evt);
+            }
         });
         docScrollPane.setViewportView(docTextPane);
 
@@ -96,6 +100,14 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
             }
         });
         fileMenu.add(openMenuItem);
+
+        saveMenuItem.setText("Save");
+        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(saveMenuItem);
 
         menuBar.add(fileMenu);
 
@@ -150,6 +162,19 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         else
            defaultTheme();
     }//GEN-LAST:event_jCheckBoxMenuItem1ItemStateChanged
+ 
+    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+        saveFile();
+    }//GEN-LAST:event_saveMenuItemActionPerformed
+
+    private void docTextPaneKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_docTextPaneKeyReleased
+        controller.updateFileContent(docTextPane.getText());
+    }//GEN-LAST:event_docTextPaneKeyReleased
+    
+    
+    private void saveFile() {
+        controller.saveFile();
+    }
     
     private  void darkTheme() {
         docTextPane.setBackground(new java.awt.Color(68, 68, 68));
@@ -164,6 +189,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         docTextPane.setCaretColor(new java.awt.Color(0, 0, 0));
         docTextPane.updateUI();
     }
+    
     //TODO new class
     //TODO add also spaces
     private boolean insertTabs() {
@@ -225,6 +251,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     
@@ -236,6 +263,7 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         switch(action) {
             case OPEN_FILE: showFile(); break;
             case OPEN_ERROR: showErrorMessage(model.getErrorMsg()); break;
+            case SAVE_NEW_FILE: saveNewFile(); break;
         }
     }
     
@@ -253,8 +281,16 @@ public class MainFrame extends javax.swing.JFrame implements Observer {
         docTextPane.setCaretPosition(0);  
     }
 
-    
-    
+    private void saveNewFile() {
+        String path = model.getSaveFilePath();
+        JFileChooser chooser = new JFileChooser(path);
+	chooser.setFileFilter(model.getFileFilter());
+        chooser.setAcceptAllFileFilterUsed(false);
+        int returnVal = chooser.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) { 
+            controller.saveFile(chooser.getSelectedFile());
+        }
+    }
     
     
 }

@@ -14,5 +14,11 @@ import java.io.File;
 public interface NoteController {
 
     public void setFile(File selectedFile);
+
+    public void saveFile();
+
+    public void updateFileContent(String text);
+
+    public void saveFile(File selectedFile);
     
 }

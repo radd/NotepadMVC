@@ -13,9 +13,17 @@ import javax.swing.filechooser.FileFilter;
  * @author Piotr
  */
 public interface NoteModel {
+
+    public void saveFile();
+
+    public void setEditFileContent(String text);
+
+    public String getSaveFilePath();
+
+    public void saveFile(File file);
     
     public static enum Action {
-        OPEN_FILE, OPEN_ERROR
+        OPEN_FILE, OPEN_ERROR, SAVE_NEW_FILE
     };
     
     public String getOpenFilePath();

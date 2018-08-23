@@ -5,11 +5,15 @@
  */
 package io.github.radd.model;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -21,9 +25,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class NoteModelImpl extends Observable implements NoteModel {
 
     private String openFilePath;
+    private String saveFilePath;
     private FileNameExtensionFilter fileFilter;
     private File currFile;
     private String fileContent;
+    private String editFileContent;
     
     private String errorMessage;
     
@@ -34,6 +40,7 @@ public class NoteModelImpl extends Observable implements NoteModel {
     private void initModel() {
         setOpenFilePath();
         setFileFilter();
+        setSaveFilePath();
     }
     
     private void changeStateAndNotify(Action a) {
@@ -72,6 +79,9 @@ public class NoteModelImpl extends Observable implements NoteModel {
         if(file != null) {
             try {
                 readFile(file);
+                currFile = file;
+                editFileContent = fileContent;
+                setSaveFilePath((currFile.getParentFile()).getAbsolutePath());
                 changeStateAndNotify(Action.OPEN_FILE);
             } catch (IOException ex) {
                 errorMessage = ex.getMessage();
@@ -85,6 +95,7 @@ public class NoteModelImpl extends Observable implements NoteModel {
 
     }
 
+    //ISSUE format encoding
     private void readFile(File file) throws IOException {
         fileContent = Files.lines(Paths.get(file.getAbsolutePath())).collect(Collectors.joining(System.lineSeparator()));
     }
@@ -94,7 +105,60 @@ public class NoteModelImpl extends Observable implements NoteModel {
         return fileContent;
     }
 
+    @Override
+    public void setEditFileContent(String text) {
+        editFileContent = text;
+    }
+    
+    @Override
+    public void saveFile() {
+        if(editFileContent != null)
+            if(currFile == null)
+                getNewFileToSave();
 
+
+    }
+    
+    @Override
+    public void saveFile(File file) {
+        if(editFileContent != null)
+            saveNewFile(file);
+    }
+
+    private void getNewFileToSave() {
+        changeStateAndNotify(Action.SAVE_NEW_FILE);
+    }
+
+    @Override
+    public String getSaveFilePath() {
+        return saveFilePath;
+    }
+    
+    private void setSaveFilePath() {
+        String path = System.getProperty("user.home") + "/Documents";
+        if(path == null || path.isEmpty())
+            path = "C:";  
+        saveFilePath = path;
+    }
+
+    private void setSaveFilePath(String path) {
+        if(path == null || path.isEmpty())
+            setSaveFilePath();
+        else
+            saveFilePath = path;
+    }
+
+    
+    private void saveNewFile(File file) {
+        //System.out.println("" + file.getAbsolutePath());
+        Path path = Paths.get(file.getAbsolutePath() + ".txt");
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write(editFileContent);
+        }       
+        catch (IOException ex) {
+            Logger.getLogger(NoteModelImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
 
     

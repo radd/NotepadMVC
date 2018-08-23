@@ -30,5 +30,21 @@ public class NoteControllerImpl implements NoteController {
     public void setFile(File file) {
         model.openFile(file);
     }
+
+    @Override
+    public void saveFile() {
+        model.saveFile();
+    }
+    
+    @Override
+    public void saveFile(File file) {
+        model.saveFile(file);
+    }
+    
+    @Override
+    public void updateFileContent(String text) {
+        model.setEditFileContent(text);    
+    }
+
     
 }
